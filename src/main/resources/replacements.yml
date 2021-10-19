@@ -1,0 +1,8 @@
+replacements:
+  replacementList:
+    - service: "getRelatedIndividual"
+      source: "@class"
+      target: "class"
+    - service: "getRelatedIndividual"
+      source: "browse"
+      target: "crown"

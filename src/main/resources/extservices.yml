@@ -1,0 +1,7 @@
+extservices:
+  getRelatedIndividual:
+    name: "getRelatedIndividual"
+    timeout: 1
+    url: "http://localhost:8080/gri"
+    transformRequest: false
+    transformResponse: true
