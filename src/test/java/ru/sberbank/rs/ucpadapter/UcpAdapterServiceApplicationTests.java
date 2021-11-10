@@ -1,10 +1,10 @@
-package ru.sberbank.rs.upcadapterservice;
+package ru.sberbank.rs.ucpadapter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UpcAdapterServiceApplicationTests {
+class UcpAdapterServiceApplicationTests {
 
     @Test
     void contextLoads() {

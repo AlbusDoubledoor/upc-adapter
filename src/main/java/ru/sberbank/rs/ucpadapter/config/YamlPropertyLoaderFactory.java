@@ -1,4 +1,4 @@
-package ru.sberbank.rs.upcadapterservice.config;
+package ru.sberbank.rs.ucpadapter.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;

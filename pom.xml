@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.sberbank.rs</groupId>
-    <artifactId>upc-adapter-service</artifactId>
+    <artifactId>argus-ucp-adapter</artifactId>
     <version>0.0.1</version>
-    <name>upc-adapter-service</name>
-    <description>Spring Boot Service - Adapter for Integrations with UPC</description>
+    <name>argus-ucp-adapter</name>
+    <description>Spring Boot Service - Adapter for Integrations with UCP</description>
     <properties>
         <java.version>11</java.version>
     </properties>

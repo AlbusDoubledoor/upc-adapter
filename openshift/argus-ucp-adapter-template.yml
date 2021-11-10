@@ -1,28 +1,28 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: upc-adapter
+  name: argus-ucp-adapter
   labels:
     type: services
 objects:
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
-      name: upc-adapter
+      name: argus-ucp-adapter
       labels:
-        app: upc-adapter
-        name: upc-adapter
+        app: argus-ucp-adapter
+        name: argus-ucp-adapter
     spec:
       selector:
         matchLabels:
-          app: upc-adapter
-          name: upc-adapter
+          app: argus-ucp-adapter
+          name: argus-ucp-adapter
       template:
         metadata:
           annotations: {sidecar.istio.io/inject: 'true'}
           labels:
-            app: upc-adapter
-            name: upc-adapter
+            app: argus-ucp-adapter
+            name: argus-ucp-adapter
             version: 1
         spec:
           containers:
@@ -31,7 +31,7 @@ objects:
                   valueFrom:
                     fieldRef: {fieldPath: metadata.namespace}
               image: registry.ca.sbrf.ru/ci01994970/ci02539503_cc360/rhel7-java-synapse-services/srvupdatemonitoringcriterion/argus-updatemonitoringcriterion-crmorg-ci02539503:0.1.0.7
-              name: upc-adapter
+              name: argus-ucp-adapter
               imagePullPolicy: IfNotPresent
               ports:
                 - containerPort: 8080
@@ -41,21 +41,21 @@ objects:
                 requests: ${{REQUESTS}}
               envFrom:
                 - configMapRef:
-                    name:  upc-adapter-config
+                    name:  argus-ucp-adapter-config
               volumeMounts:
                 - {mountPath: /opt/synapse/logs, name: synapselogs}
                 - {mountPath: /fluent-bit/etc/, name: fluent-bit, readOnly: true}
                 - {name: application-config, mountPath: /deployments/config, readOnly: true}
               livenessProbe:
                 failureThreshold: 4
-                httpGet: {path: /actuator/health, port: 8788}
+                httpGet: {path: /actuator/health, port: 8080}
                 initialDelaySeconds: 120
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 5
               readinessProbe:
                 failureThreshold: 4
-                httpGet: {path: /actuator/health, port: 8788}
+                httpGet: {path: /actuator/health, port: 8080}
                 initialDelaySeconds: 120
                 periodSeconds: 10
                 successThreshold: 1
@@ -84,21 +84,19 @@ objects:
                 secretName: fluent-bit-cert
             - name: application-config
               configMap:
-                name: upc-adapter-config
+                name: argus-ucp-adapter-config
                 items:
-                  - {key: application.properties, path: application.properties}
-            - name: masking-config
-              secret:
-                optional: true
-                secretName: masking-secret-argus-updatemonitoringcriterion-crmorg
+                  - {key: application.yml, path: application.yml}
+                  - {key: extservices.yml, path: extservices.yml}
+                  - {key: replacements.yml, path: replacements.yml}
 
   - apiVersion: v1
     kind: Service
     metadata:
-      name: upc-adapter
+      name: argus-ucp-adapter
     spec:
       selector:
-        app: upc-adapter
+        app: argus-ucp-adapter
       ports:
         - name: http
           port: 8080
@@ -108,20 +106,26 @@ objects:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: upc-adapter-config
+      name: argus-ucp-adapter-config
     data:
-      application.properties: |-
-        server.port=8787
-        management.server.port=8788
-
-        grpc.client.settings[crmorg].hostname=crmorg-mq-gateway-sync-sp
-        grpc.client.settings[crmorg].port=5454
-        grpc.client.settings[crmorg].timeout=${GRPC_TIMEOUT}
-
-        environment.mq.sendToQ=ESB.CRM.RISKS.REQUEST
-        environment.mq.replyToQ=SYNAPSE.CRMORG.SYNC.RESPONSE
-        environment.mq.expiryInMillis=${MQ_EXPIRY}
-        environment.controller.x-forwarded-for=${X_FORWARDED_FOR}
+      application.yml: |-
+        server:
+          port: 8080
+          ssl.enabled: false
+      extservices.yml: |-
+        extservices:
+          getRelatedIndividual:
+            name: "getRelatedIndividual"
+            timeout: 1
+            url: "http://localhost:8080/gri"
+            transformRequest: false
+            transformResponse: true
+      replacements.yml: |-
+        replacements:
+          replacementList:
+            - service: "getRelatedIndividual"
+              source: "@class"
+              target: "class"
 
 parameters:
   - name: REQUESTS

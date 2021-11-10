@@ -1,4 +1,4 @@
-package ru.sberbank.rs.upcadapterservice.service;
+package ru.sberbank.rs.ucpadapter.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import ru.sberbank.rs.upcadapterservice.config.Replacements;
+import ru.sberbank.rs.ucpadapter.config.Replacements;
 
 import java.time.Duration;
 import java.util.HashMap;

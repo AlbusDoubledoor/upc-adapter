@@ -1,4 +1,4 @@
-package ru.sberbank.rs.upcadapterservice.config;
+package ru.sberbank.rs.ucpadapter.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 @Setter
 @Configuration
 @EnableConfigurationProperties
-@PropertySource(value ={"classpath:extservices.yml"}, factory = YamlPropertyLoaderFactory.class)
+@PropertySource(value ={"file:/deployments/config/extservices.yml"}, factory = YamlPropertyLoaderFactory.class)
 @ConfigurationProperties("extservices")
 public class ExtServices {
     private ExtServiceDefinition getRelatedIndividual;

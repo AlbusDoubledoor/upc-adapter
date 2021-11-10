@@ -1,4 +1,4 @@
-package ru.sberbank.rs.upcadapterservice.config;
+package ru.sberbank.rs.ucpadapter.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Configuration
 @EnableConfigurationProperties
-@PropertySource(value ={"classpath:replacements.yml"}, factory = YamlPropertyLoaderFactory.class)
+@PropertySource(value ={"file:/deployments/config/replacements.yml"}, factory = YamlPropertyLoaderFactory.class)
 @ConfigurationProperties("replacements")
 public class Replacements {
     private List<Replacement> replacementList;
