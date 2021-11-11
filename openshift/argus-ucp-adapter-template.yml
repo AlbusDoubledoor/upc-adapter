@@ -116,7 +116,7 @@ objects:
         extservices:
           getRelatedIndividual:
             name: "getRelatedIndividual"
-            timeout: 1
+            timeout: 90000
             url: "http://localhost:8080/gri"
             transformRequest: false
             transformResponse: true

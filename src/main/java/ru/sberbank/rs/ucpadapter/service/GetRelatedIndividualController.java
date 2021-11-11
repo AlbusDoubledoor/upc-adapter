@@ -11,16 +11,14 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import ru.sberbank.rs.ucpadapter.config.Replacements;
+import ru.sberbank.rs.ucpadapter.model.synapse.header.SynapseHeaders;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 public class GetRelatedIndividualController {
-    private final String X_SYNAPSE_RQUID = "x-synapse-rquid";
 
     @Value("#{@extServices.getRelatedIndividual.name}")
     private String serviceName;
@@ -41,8 +39,8 @@ public class GetRelatedIndividualController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getRelatedIndividual(HttpEntity<String> httpEntity) {
-        String rquid = httpEntity.getHeaders().getFirst(X_SYNAPSE_RQUID);
-        log.info("[{}] HTTP Request is received", rquid);
+        String rquid = httpEntity.getHeaders().getFirst(SynapseHeaders.RQUID);
+        log.info("[{}] HTTP Initial Request is received", rquid);
 
         RestTemplate restTemplate = new RestTemplateBuilder().setReadTimeout(Duration.ofSeconds(timeout)).build();
 
@@ -51,11 +49,11 @@ public class GetRelatedIndividualController {
             response = restTemplate.exchange(endPoint, HttpMethod.POST, httpEntity, String.class);
         } catch (RestClientResponseException clientex) {
             // Пробрасываем все ошибки от конечного сервиса в ответ
-            log.error("[{}] HTTP Request failed with code {}", rquid, clientex.getRawStatusCode());
+            log.error("[{}] HTTP Outbound Request failed with code {}", rquid, clientex.getRawStatusCode());
             return ResponseEntity.status(clientex.getRawStatusCode()).body(clientex.getResponseBodyAsString());
         } catch (ResourceAccessException raex) {
             // Если получили таймаут по чтению, то отвечаем таймаутом
-            log.error("[{}] HTTP Request failed with timeout", rquid);
+            log.error("[{}] HTTP Outbound Request failed with timeout", rquid);
             return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).build();
         }
 
@@ -76,18 +74,5 @@ public class GetRelatedIndividualController {
 
         log.info("[{}] HTTP Response returns OK", rquid);
         return ResponseEntity.ok().body(rsBody);
-    }
-
-    @RequestMapping(value = "/gri",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> griHelper(HttpEntity<String> httpEntity) throws InterruptedException {
-        log.info("HTTP Headers {}", httpEntity.getHeaders());
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "OK");
-        response.put("info", "@class & browse & crown");
-        Thread.sleep(800);
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 }
